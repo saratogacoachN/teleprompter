@@ -8125,13 +8125,14 @@ const teleprompterState = {
   mode: null,
   popupWindow: null,
   isPlaying: false,
-  speed: 45,
+  speed: 120,
   fontSize: 30,
   theme: 'dark',
   lastFrameTs: 0,
   rafId: null,
   inlineNotice: ''
 };
+const TELEPROMPTER_DEFAULT_SPEED = 120;
 const TELEPROMPTER_POPUP_WIDTH = 960;
 const TELEPROMPTER_POPUP_HEIGHT = 720;
 const TELEPROMPTER_MAX_FRAME_DELTA_MS = 64;
@@ -8908,7 +8909,7 @@ function teleprompterFrame(ts) {
     syncTeleprompter();
     return;
   }
-  viewport.scrollTop = Math.min(maxScroll, viewport.scrollTop + ((teleprompterState.speed || 45) * delta / 1000));
+  viewport.scrollTop = Math.min(maxScroll, viewport.scrollTop + ((teleprompterState.speed || TELEPROMPTER_DEFAULT_SPEED) * delta / 1000));
   teleprompterState.rafId = requestAnimationFrame(teleprompterFrame);
 }
 
