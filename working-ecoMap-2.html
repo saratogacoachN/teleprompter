@@ -8132,6 +8132,9 @@ const teleprompterState = {
   rafId: null,
   inlineNotice: ''
 };
+const TELEPROMPTER_POPUP_WIDTH = 960;
+const TELEPROMPTER_POPUP_HEIGHT = 720;
+const TELEPROMPTER_MAX_FRAME_DELTA_MS = 64;
 const TELEPROMPTER_STYLE_TEXT = `
 .tp-shell {
   --tp-bg: #0f172a;
@@ -8717,14 +8720,18 @@ function getTeleprompterSelectedChapterId() {
 
 function getTeleprompterChapterLabel(ev, idx) {
   const live = getLiveChapterSnapshot(ev) || ev || {};
-  const bits = [live.date, live.title || ('Chapter ' + (idx + 1)), live.isDraft ? 'Draft' : ''].filter(Boolean);
+  const bits = [live.date, getTeleprompterDisplayTitle(live, idx), live.isDraft ? 'Draft' : ''].filter(Boolean);
   return bits.join(' — ');
+}
+
+function getTeleprompterDisplayTitle(ev, idx) {
+  return (ev && ev.title) ? ev.title : ('Chapter ' + ((idx || 0) + 1));
 }
 
 function getTeleprompterChapterHtml(ev) {
   if (!ev) return '<p class="tp-empty">No chapters yet. Add a Life Story chapter to start teleprompting.</p>';
   const live = getLiveChapterSnapshot(ev) || ev;
-  const title = live.title || 'Untitled Chapter';
+  const title = getTeleprompterDisplayTitle(live);
   const date = live.date || '';
   let bodyHtml = '';
   if (live.vignette) {
@@ -8758,7 +8765,7 @@ function updateTeleprompterToggleUI() {
 function ensureTeleprompterPopupWindow() {
   let win = teleprompterState.popupWindow;
   if (win && !win.closed) return win;
-  win = window.open('', 'lifeStoryTeleprompter', 'popup=yes,width=960,height=720,resizable=yes,scrollbars=yes');
+  win = window.open('', 'lifeStoryTeleprompter', 'popup=yes,width=' + TELEPROMPTER_POPUP_WIDTH + ',height=' + TELEPROMPTER_POPUP_HEIGHT + ',resizable=yes,scrollbars=yes');
   if (!win) return null;
   teleprompterState.popupWindow = win;
   if (!win.document || !win.document.getElementById('tpWindowHost')) {
@@ -8803,7 +8810,7 @@ function getTeleprompterMarkup(isPopup) {
     +       '<button type="button" class="tp-btn tp-btn-danger" data-tp-action="leaveTeams">Leave Teams</button>'
     +     '</div>'
     +   '</div>'
-    +   '<div class="tp-privacy-banner" data-tp-ref="privacyBanner">&#128274; Teams session active — the Diagram view remains locked for privacy until you leave the session.</div>'
+    +   '<div class="tp-privacy-banner" data-tp-ref="privacyBanner">🔒 Teams session active — the diagram view remains locked for privacy until you leave the session.</div>'
     +   '<div class="tp-inline-notice" data-tp-ref="notice"></div>'
     +   '<div class="tp-viewport" data-tp-ref="viewport"><div class="tp-content" data-tp-ref="content"></div></div>'
     + '</section>';
@@ -8891,7 +8898,7 @@ function teleprompterFrame(ts) {
     return;
   }
   if (!teleprompterState.lastFrameTs) teleprompterState.lastFrameTs = ts;
-  const delta = Math.min(64, ts - teleprompterState.lastFrameTs);
+  const delta = Math.min(TELEPROMPTER_MAX_FRAME_DELTA_MS, ts - teleprompterState.lastFrameTs);
   teleprompterState.lastFrameTs = ts;
   const maxScroll = Math.max(0, viewport.scrollHeight - viewport.clientHeight);
   if (viewport.scrollTop >= maxScroll) {
@@ -8953,9 +8960,9 @@ function updateTeleprompterHost(doc, host, isPopup) {
   refs.shell.className = 'tp-shell' + (isPopup ? ' tp-popup-shell' : '') + ' tp-theme-' + (teleprompterState.theme || 'dark');
   refs.shell.style.setProperty('--tp-font-size', teleprompterState.fontSize + 'px');
   refs.speed.value = String(teleprompterState.speed);
-  refs.speedValue.textContent = teleprompterState.speed + ' px/s';
+  refs.speedValue.textContent = teleprompterState.speed + 'px/s';
   refs.size.value = String(teleprompterState.fontSize);
-  refs.sizeValue.textContent = teleprompterState.fontSize + ' px';
+  refs.sizeValue.textContent = teleprompterState.fontSize + 'px';
   refs.theme.value = teleprompterState.theme;
   refs.status.textContent = selectedEvent
     ? (selectedId === activeChapterId ? 'Showing the active chapter vignette' : 'Showing the selected chapter vignette')
@@ -9005,7 +9012,7 @@ function openTeleprompter() {
     try { popup.focus(); } catch (e) {}
   } else {
     teleprompterState.mode = 'inline';
-    teleprompterState.inlineNotice = 'Pop-up blocked. Showing the teleprompter in the Life Story view instead.';
+    teleprompterState.inlineNotice = 'Pop-out blocked. Showing the teleprompter in the Life Story view instead.';
     updateTeleprompterHost(document, getTeleprompterInlineHost(), false);
   }
   syncTeleprompter();
