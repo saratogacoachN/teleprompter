@@ -400,9 +400,6 @@ function ensureTeleprompterHost(doc, host, isPopup) {
     if (refs.leaveTeams) refs.leaveTeams.addEventListener('click', leaveTeamsSession);
     if (refs.dragHandle && !isPopup) {
       refs.dragHandle.addEventListener('pointerdown', startTeleprompterInlineDrag);
-      refs.dragHandle.addEventListener('pointermove', moveTeleprompterInlineDrag);
-      refs.dragHandle.addEventListener('pointerup', endTeleprompterInlineDrag);
-      refs.dragHandle.addEventListener('pointercancel', endTeleprompterInlineDrag);
       refs.dragHandle.addEventListener('lostpointercapture', endTeleprompterInlineDrag);
     }
   }
@@ -475,7 +472,14 @@ function startTeleprompterInlineDrag(event) {
     originX: origin.x,
     originY: origin.y
   };
-  if (handle.setPointerCapture) handle.setPointerCapture(event.pointerId);
+  document.addEventListener('pointermove', moveTeleprompterInlineDrag);
+  document.addEventListener('pointerup', endTeleprompterInlineDrag);
+  document.addEventListener('pointercancel', endTeleprompterInlineDrag);
+  if (handle.setPointerCapture) {
+    try {
+      handle.setPointerCapture(event.pointerId);
+    } catch (err) {}
+  }
   event.preventDefault();
 }
 
@@ -498,8 +502,13 @@ function endTeleprompterInlineDrag(event) {
   if (!dragSession) return;
   if (event && event.pointerId != null && dragSession.pointerId !== event.pointerId) return;
   teleprompterState.dragSession = null;
+  document.removeEventListener('pointermove', moveTeleprompterInlineDrag);
+  document.removeEventListener('pointerup', endTeleprompterInlineDrag);
+  document.removeEventListener('pointercancel', endTeleprompterInlineDrag);
   if (dragSession.handle && dragSession.handle.releasePointerCapture && dragSession.handle.hasPointerCapture && dragSession.handle.hasPointerCapture(dragSession.pointerId)) {
-    dragSession.handle.releasePointerCapture(dragSession.pointerId);
+    try {
+      dragSession.handle.releasePointerCapture(dragSession.pointerId);
+    } catch (err) {}
   }
 }
 
