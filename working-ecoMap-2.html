@@ -591,21 +591,23 @@ svg .node-group:hover .ecomap-resize-handle { display: inline; }
     box-shadow: 0 2px 10px rgba(2,6,23,0.05);
   }
   #lsTeleprompterPanel {
+    --ls-teleprompter-padding: 24px;
     position: absolute;
     inset: 0;
     z-index: 30;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 24px;
+    padding: var(--ls-teleprompter-padding);
     box-sizing: border-box;
     background: rgba(15,23,42,0.44);
+    -webkit-backdrop-filter: blur(2px);
     backdrop-filter: blur(2px);
   }
   #lsTeleprompterPanel[hidden] { display: none !important; }
   #lsTeleprompterRoot {
-    width: min(960px, calc(100% - 48px));
-    height: min(720px, calc(100% - 48px));
+    width: min(960px, calc(100% - (var(--ls-teleprompter-padding) * 2)));
+    height: min(720px, calc(100% - (var(--ls-teleprompter-padding) * 2)));
     max-width: 100%;
     max-height: 100%;
     display: flex;
