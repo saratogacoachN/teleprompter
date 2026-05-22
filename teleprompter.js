@@ -456,7 +456,7 @@ function applyTeleprompterInlinePosition() {
 
 function startTeleprompterInlineDrag(event) {
   if (!event || teleprompterState.mode !== 'inline') return;
-  if (event.button !== 0 && event.pointerType !== 'touch' && event.pointerType !== 'pen') return;
+  if (event.pointerType === 'mouse' && event.button !== 0) return;
   const handle = event.currentTarget;
   if (!handle) return;
   const panel = getTeleprompterInlinePanel();
@@ -500,7 +500,7 @@ function moveTeleprompterInlineDrag(event) {
 function endTeleprompterInlineDrag(event) {
   const dragSession = teleprompterState.dragSession;
   if (!dragSession) return;
-  if (event && event.pointerId != null && dragSession.pointerId !== event.pointerId) return;
+  if (event && event.pointerId !== undefined && dragSession.pointerId !== event.pointerId) return;
   teleprompterState.dragSession = null;
   document.removeEventListener('pointermove', moveTeleprompterInlineDrag);
   document.removeEventListener('pointerup', endTeleprompterInlineDrag);
