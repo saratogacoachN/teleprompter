@@ -561,7 +561,6 @@ function closeTeleprompter() {
   }
   teleprompterState.popupWindow = null;
   teleprompterState.mode = null;
-  teleprompterState.lastFrameTs = 0;
   syncTeleprompter();
 }
 
