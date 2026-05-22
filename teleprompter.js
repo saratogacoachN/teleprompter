@@ -15,6 +15,7 @@ const TELEPROMPTER_DEFAULT_SPEED = 120;
 const TELEPROMPTER_POPUP_WIDTH = 960;
 const TELEPROMPTER_POPUP_HEIGHT = 720;
 const TELEPROMPTER_MAX_FRAME_DELTA_MS = 64;
+let teleprompterResizeRafId = null;
 const TELEPROMPTER_STYLE_TEXT = [
   '.tp-shell {',
   '  --tp-bg: #0f172a;',
@@ -414,6 +415,12 @@ function getTeleprompterInlineHost() {
   return document.getElementById('lsTeleprompterRoot');
 }
 
+function getTeleprompterPopupDocument() {
+  const popupWindow = teleprompterState.popupWindow;
+  if (!popupWindow || popupWindow.closed) return null;
+  return popupWindow.document || null;
+}
+
 function getTeleprompterInlinePadding(panel) {
   if (!panel || !window.getComputedStyle) return 0;
   const padding = window.getComputedStyle(panel).getPropertyValue('--ls-teleprompter-padding');
@@ -513,8 +520,9 @@ function endTeleprompterInlineDrag(event) {
 }
 
 function getTeleprompterViewport() {
-  if (teleprompterState.mode === 'popup' && teleprompterState.popupWindow && !teleprompterState.popupWindow.closed) {
-    return teleprompterState.popupWindow.document.querySelector('[data-tp-ref="viewport"]');
+  if (teleprompterState.mode === 'popup') {
+    const popupDoc = getTeleprompterPopupDocument();
+    return popupDoc ? popupDoc.querySelector('[data-tp-ref="viewport"]') : null;
   }
   if (teleprompterState.mode === 'inline') {
     const host = getTeleprompterInlineHost();
@@ -618,7 +626,7 @@ function updateTeleprompterHost(doc, host, isPopup) {
   refs.leaveTeams.style.display = teamsSessionActive ? 'inline-flex' : 'none';
   refs.notice.classList.toggle('tp-visible', !!teleprompterState.inlineNotice && !isPopup);
   refs.notice.textContent = !isPopup ? (teleprompterState.inlineNotice || '') : '';
-  refs.dragHandle.classList.toggle('tp-drag-handle', !isPopup);
+  if (refs.dragHandle) refs.dragHandle.classList.toggle('tp-drag-handle', !isPopup);
 
   refs.viewport.dataset.chapterId = selectedId || '';
   if ((selectedId || '') !== priorChapterId) {
@@ -638,7 +646,8 @@ function syncTeleprompter() {
     updateTeleprompterHost(document, getTeleprompterInlineHost(), false);
   }
   if (teleprompterState.mode === 'popup') {
-    if (!teleprompterState.popupWindow || teleprompterState.popupWindow.closed) {
+    const popupDoc = getTeleprompterPopupDocument();
+    if (!popupDoc) {
       teleprompterState.mode = null;
       teleprompterState.popupWindow = null;
       teleprompterState.isPlaying = false;
@@ -646,7 +655,7 @@ function syncTeleprompter() {
       updateTeleprompterToggleUI();
       return;
     }
-    updateTeleprompterHost(teleprompterState.popupWindow.document, teleprompterState.popupWindow.document.getElementById('tpWindowHost'), true);
+    updateTeleprompterHost(popupDoc, popupDoc.getElementById('tpWindowHost'), true);
   }
 }
 
@@ -683,5 +692,10 @@ function toggleTeleprompter() {
 }
 
 window.addEventListener('resize', function() {
-  if (teleprompterState.mode === 'inline') applyTeleprompterInlinePosition();
+  if (teleprompterState.mode !== 'inline') return;
+  if (teleprompterResizeRafId) return;
+  teleprompterResizeRafId = window.requestAnimationFrame(function() {
+    teleprompterResizeRafId = null;
+    if (teleprompterState.mode === 'inline') applyTeleprompterInlinePosition();
+  });
 });
