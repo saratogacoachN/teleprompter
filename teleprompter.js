@@ -30,6 +30,16 @@ const TELEPROMPTER_STYLE_TEXT = [
   '  flex-direction: column;',
   '  gap: 12px;',
   '  min-height: 260px;',
+  '  min-width: 0;',
+  '  overflow: hidden;',
+  '  box-sizing: border-box;',
+  '}',
+  '.tp-inline-shell {',
+  '  width: 100%;',
+  '  height: 100%;',
+  '  max-width: 100%;',
+  '  max-height: 100%;',
+  '  margin: 0;',
   '}',
   '.tp-popup-shell {',
   '  min-height: calc(100vh - 28px);',
@@ -305,7 +315,7 @@ function ensureTeleprompterPopupWindow() {
 
 function getTeleprompterMarkup(isPopup) {
   return ''
-    + '<section class="tp-shell' + (isPopup ? ' tp-popup-shell' : '') + '">'
+    + '<section class="tp-shell' + (isPopup ? ' tp-popup-shell' : ' tp-inline-shell') + '">'
     +   '<div class="tp-header">'
     +     '<div class="tp-title-block">'
     +       '<h2 class="tp-title">Life Story Teleprompter</h2>'
@@ -424,14 +434,18 @@ function teleprompterFrame(ts) {
     return;
   }
   viewport.scrollTop = Math.min(maxScroll, viewport.scrollTop + ((teleprompterState.speed || TELEPROMPTER_DEFAULT_SPEED) * delta / 1000));
-  teleprompterState.rafId = requestAnimationFrame(teleprompterFrame);
+  teleprompterState.rafId = window.requestAnimationFrame(teleprompterFrame);
 }
 
 function setTeleprompterPlaying(shouldPlay) {
   teleprompterState.isPlaying = !!shouldPlay;
   teleprompterState.lastFrameTs = 0;
+  if (!teleprompterState.isPlaying && teleprompterState.rafId) {
+    window.cancelAnimationFrame(teleprompterState.rafId);
+    teleprompterState.rafId = null;
+  }
   if (teleprompterState.isPlaying && !teleprompterState.rafId) {
-    teleprompterState.rafId = requestAnimationFrame(teleprompterFrame);
+    teleprompterState.rafId = window.requestAnimationFrame(teleprompterFrame);
   }
   syncTeleprompter();
 }
@@ -472,7 +486,7 @@ function updateTeleprompterHost(doc, host, isPopup) {
     refs.chapter.value = selectedId || '';
   }
 
-  refs.shell.className = 'tp-shell' + (isPopup ? ' tp-popup-shell' : '') + ' tp-theme-' + (teleprompterState.theme || 'dark');
+  refs.shell.className = 'tp-shell' + (isPopup ? ' tp-popup-shell' : ' tp-inline-shell') + ' tp-theme-' + (teleprompterState.theme || 'dark');
   refs.shell.style.setProperty('--tp-font-size', teleprompterState.fontSize + 'px');
   refs.speed.value = String(teleprompterState.speed);
   refs.speedValue.textContent = teleprompterState.speed + 'px/s';
@@ -520,22 +534,18 @@ function syncTeleprompter() {
 
 function openTeleprompter() {
   teleprompterState.inlineNotice = '';
-  const popup = ensureTeleprompterPopupWindow();
-  if (popup) {
-    teleprompterState.mode = 'popup';
-    updateTeleprompterHost(popup.document, popup.document.getElementById('tpWindowHost'), true);
-    try { popup.focus(); } catch (e) {}
-  } else {
-    teleprompterState.mode = 'inline';
-    teleprompterState.inlineNotice = 'Pop-out blocked. Showing the teleprompter in the Life Story view instead.';
-    updateTeleprompterHost(document, getTeleprompterInlineHost(), false);
-  }
+  teleprompterState.mode = 'inline';
+  updateTeleprompterHost(document, getTeleprompterInlineHost(), false);
   syncTeleprompter();
 }
 
 function closeTeleprompter() {
   teleprompterState.isPlaying = false;
   teleprompterState.lastFrameTs = 0;
+  if (teleprompterState.rafId) {
+    window.cancelAnimationFrame(teleprompterState.rafId);
+    teleprompterState.rafId = null;
+  }
   teleprompterState.inlineNotice = '';
   if (teleprompterState.popupWindow && !teleprompterState.popupWindow.closed) {
     teleprompterState.popupWindow.close();

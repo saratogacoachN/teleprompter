@@ -590,7 +590,32 @@ svg .node-group:hover .ecomap-resize-handle { display: inline; }
     border: 1px solid #e6eef8;
     box-shadow: 0 2px 10px rgba(2,6,23,0.05);
   }
+  #lsTeleprompterPanel {
+    --ls-teleprompter-padding: 24px;
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--ls-teleprompter-padding);
+    box-sizing: border-box;
+    background: rgba(15,23,42,0.44);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+  }
   #lsTeleprompterPanel[hidden] { display: none !important; }
+  #lsTeleprompterRoot {
+    width: min(960px, calc(100% - (var(--ls-teleprompter-padding) * 2)));
+    height: min(720px, calc(100% - (var(--ls-teleprompter-padding) * 2)));
+    max-width: 100%;
+    max-height: 100%;
+    display: flex;
+  }
+  #lsTeleprompterRoot > * {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
   #lsEditorToolbar {
     display: flex;
     align-items: center;
@@ -8732,6 +8757,10 @@ document.addEventListener('DOMContentLoaded', function() {
     var ti = document.getElementById('lsNewTitle'); if (ti) ti.value = '';
     renderLsChapterTree();
   });
+  var lsTeleprompterPanel = document.getElementById('lsTeleprompterPanel');
+  if (lsTeleprompterPanel) lsTeleprompterPanel.addEventListener('click', function(ev) {
+    if (ev.target === lsTeleprompterPanel) closeTeleprompter();
+  });
   var lsTeleprompterToggle = document.getElementById('lsTeleprompterToggle');
   if (lsTeleprompterToggle) lsTeleprompterToggle.addEventListener('click', toggleTeleprompter);
   var lsSaveDraft   = document.getElementById('lsSaveDraft');
@@ -8928,10 +8957,6 @@ document.addEventListener('DOMContentLoaded', function() {
       <button class="ls-btn" id="lsPDFBtn">PDF</button>
       <button class="ls-btn" id="lsTeleprompterToggle" aria-pressed="false">Open Teleprompter</button>
     </div>
-    <div id="lsTeleprompterPanel" hidden>
-      <div id="lsTeleprompterRoot"></div>
-    </div>
-
     <!-- Editor area -->
     <div id="lsEditorWrap">
       <!-- Formatting toolbar -->
@@ -8999,6 +9024,9 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="vr-empty">No recordings yet.</div>
           </div>
         </div>
+      </div>
+      <div id="lsTeleprompterPanel" hidden>
+        <div id="lsTeleprompterRoot"></div>
       </div>
     </div>
 
