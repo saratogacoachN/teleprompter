@@ -434,25 +434,18 @@ function teleprompterFrame(ts) {
     return;
   }
   viewport.scrollTop = Math.min(maxScroll, viewport.scrollTop + ((teleprompterState.speed || TELEPROMPTER_DEFAULT_SPEED) * delta / 1000));
-  teleprompterState.rafId = requestTeleprompterFrame();
-}
-
-function requestTeleprompterFrame() {
-  return window.requestAnimationFrame(teleprompterFrame);
-}
-
-function cancelTeleprompterFrame() {
-  if (!teleprompterState.rafId) return;
-  window.cancelAnimationFrame(teleprompterState.rafId);
-  teleprompterState.rafId = null;
+  teleprompterState.rafId = window.requestAnimationFrame(teleprompterFrame);
 }
 
 function setTeleprompterPlaying(shouldPlay) {
   teleprompterState.isPlaying = !!shouldPlay;
   teleprompterState.lastFrameTs = 0;
-  if (!teleprompterState.isPlaying) cancelTeleprompterFrame();
+  if (!teleprompterState.isPlaying && teleprompterState.rafId) {
+    window.cancelAnimationFrame(teleprompterState.rafId);
+    teleprompterState.rafId = null;
+  }
   if (teleprompterState.isPlaying && !teleprompterState.rafId) {
-    teleprompterState.rafId = requestTeleprompterFrame();
+    teleprompterState.rafId = window.requestAnimationFrame(teleprompterFrame);
   }
   syncTeleprompter();
 }
@@ -547,7 +540,12 @@ function openTeleprompter() {
 }
 
 function closeTeleprompter() {
-  setTeleprompterPlaying(false);
+  teleprompterState.isPlaying = false;
+  teleprompterState.lastFrameTs = 0;
+  if (teleprompterState.rafId) {
+    window.cancelAnimationFrame(teleprompterState.rafId);
+    teleprompterState.rafId = null;
+  }
   teleprompterState.inlineNotice = '';
   if (teleprompterState.popupWindow && !teleprompterState.popupWindow.closed) {
     teleprompterState.popupWindow.close();
