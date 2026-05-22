@@ -8357,7 +8357,7 @@ function renderLsChapterTree() {
   ensureTimeline();
   const events = (model.timeline || []).slice().sort(compareTlDates);
   if (events.length === 0) {
-    list.innerHTML = '<div style="color:#9ca3af;font-size:12px;padding:8px 4px">No chapters yet. Click \u201cAdd New Chapter\u201d to start.</div>';
+    list.innerHTML = '<div style="color:#9ca3af;font-size:12px;padding:8px 4px">No chapters yet. Click &ldquo;Add New Chapter&rdquo; to start.</div>';
     syncTeleprompter();
     return;
   }
@@ -8404,7 +8404,7 @@ function renderLsChapterTree() {
       if (activeChapterId === ev.id) {
         activeChapterId = null;
         const ed = document.getElementById('lsEditor');
-        if (ed) ed.innerHTML = '<p style="color:#9ca3af">Select a chapter or click \u201cAdd New Chapter\u201d\u2026</p>';
+        if (ed) ed.innerHTML = '<p style="color:#9ca3af">Select a chapter or click &ldquo;Add New Chapter&rdquo;&hellip;</p>';
         const di = document.getElementById('lsNewDate');  if (di) di.value = '';
         const ti = document.getElementById('lsNewTitle'); if (ti) ti.value = '';
       }
