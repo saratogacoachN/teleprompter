@@ -595,10 +595,8 @@ svg .node-group:hover .ecomap-resize-handle { display: inline; }
     position: absolute;
     inset: 0;
     z-index: 30;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     padding: var(--ls-teleprompter-padding);
+    overflow: hidden;
     box-sizing: border-box;
     background: rgba(15,23,42,0.44);
     -webkit-backdrop-filter: blur(2px);
@@ -606,6 +604,7 @@ svg .node-group:hover .ecomap-resize-handle { display: inline; }
   }
   #lsTeleprompterPanel[hidden] { display: none !important; }
   #lsTeleprompterRoot {
+    position: absolute;
     width: min(960px, calc(100% - (var(--ls-teleprompter-padding) * 2)));
     height: min(720px, calc(100% - (var(--ls-teleprompter-padding) * 2)));
     max-width: 100%;
