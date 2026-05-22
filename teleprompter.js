@@ -437,20 +437,13 @@ function teleprompterFrame(ts) {
   teleprompterState.rafId = requestTeleprompterFrame();
 }
 
-function getTeleprompterAnimationWindow() {
-  if (teleprompterState.mode === 'popup' && teleprompterState.popupWindow && !teleprompterState.popupWindow.closed) {
-    return teleprompterState.popupWindow;
-  }
-  return window;
-}
-
 function requestTeleprompterFrame() {
-  return getTeleprompterAnimationWindow().requestAnimationFrame(teleprompterFrame);
+  return window.requestAnimationFrame(teleprompterFrame);
 }
 
 function cancelTeleprompterFrame() {
   if (!teleprompterState.rafId) return;
-  getTeleprompterAnimationWindow().cancelAnimationFrame(teleprompterState.rafId);
+  window.cancelAnimationFrame(teleprompterState.rafId);
   teleprompterState.rafId = null;
 }
 
