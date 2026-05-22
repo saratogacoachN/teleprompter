@@ -1,7 +1,7 @@
 // Service Worker for Life Story + Diagram App
 // Caches all app assets for full offline operation
 
-const CACHE_NAME = 'Life Story + Diagram-app-v10';
+const CACHE_NAME = 'Life Story + Diagram-app-v11';
 
 // List ALL files the app needs to run offline.
 // NOTE: Do NOT include './' (the directory root) — many servers redirect it,
@@ -10,6 +10,7 @@ const CACHE_NAME = 'Life Story + Diagram-app-v10';
 const ASSETS_TO_CACHE = [
   './working-ecoMap-2.html',
   './voice-recorder.js',
+  './teleprompter.js',
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png',
