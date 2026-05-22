@@ -8115,7 +8115,7 @@ window.createRelationship = createRelationship;
 window.openRelationshipCreator = openRelationshipCreator;
 
 /* ====================================================
-   VIEW MANAGEMENT  (Life Story  ↔  Diagram)
+   VIEW MANAGEMENT  (Life Story <-> Diagram)
    ==================================================== */
 
 let activeChapterId = null;
@@ -8136,189 +8136,189 @@ const TELEPROMPTER_DEFAULT_SPEED = 120;
 const TELEPROMPTER_POPUP_WIDTH = 960;
 const TELEPROMPTER_POPUP_HEIGHT = 720;
 const TELEPROMPTER_MAX_FRAME_DELTA_MS = 64;
-const TELEPROMPTER_STYLE_TEXT = `
-.tp-shell {
-  --tp-bg: #0f172a;
-  --tp-panel: #111827;
-  --tp-text: #f8fafc;
-  --tp-muted: #cbd5e1;
-  --tp-accent: #60a5fa;
-  color: var(--tp-text);
-  background: var(--tp-panel);
-  border: 1px solid rgba(148,163,184,0.22);
-  border-radius: 14px;
-  box-shadow: 0 10px 28px rgba(15,23,42,0.16);
-  padding: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  min-height: 260px;
-}
-.tp-popup-shell {
-  min-height: calc(100vh - 28px);
-  margin: 14px;
-  box-sizing: border-box;
-}
-.tp-theme-light {
-  --tp-bg: #ffffff;
-  --tp-panel: #f8fafc;
-  --tp-text: #111827;
-  --tp-muted: #475569;
-  --tp-accent: #2563eb;
-}
-.tp-theme-sepia {
-  --tp-bg: #f6efe2;
-  --tp-panel: #efe3c6;
-  --tp-text: #4b3521;
-  --tp-muted: #7c5f3b;
-  --tp-accent: #b45309;
-}
-.tp-theme-highcontrast {
-  --tp-bg: #000000;
-  --tp-panel: #000000;
-  --tp-text: #ffff00;
-  --tp-muted: #ffffff;
-  --tp-accent: #00ffff;
-}
-.tp-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 10px;
-}
-.tp-title-block { min-width: 0; }
-.tp-title {
-  margin: 0;
-  font-size: 18px;
-  color: var(--tp-text);
-}
-.tp-subtitle {
-  margin-top: 3px;
-  color: var(--tp-muted);
-  font-size: 12px;
-}
-.tp-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: flex-end;
-}
-.tp-control {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 120px;
-  color: var(--tp-muted);
-  font-size: 12px;
-}
-.tp-control select,
-.tp-control input[type="range"] {
-  width: 100%;
-}
-.tp-inline-values {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-.tp-btn-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-left: auto;
-}
-.tp-btn {
-  border: 1px solid rgba(148,163,184,0.35);
-  background: rgba(255,255,255,0.08);
-  color: var(--tp-text);
-  border-radius: 8px;
-  padding: 7px 11px;
-  font-size: 12px;
-  cursor: pointer;
-}
-.tp-btn:hover { border-color: var(--tp-accent); }
-.tp-btn-primary {
-  background: var(--tp-accent);
-  color: #fff;
-  border-color: var(--tp-accent);
-}
-.tp-btn-danger {
-  background: #dc2626;
-  border-color: #dc2626;
-  color: #fff;
-}
-.tp-privacy-banner {
-  display: none;
-  background: rgba(37,99,235,0.18);
-  color: var(--tp-text);
-  border: 1px solid rgba(96,165,250,0.42);
-  border-radius: 10px;
-  padding: 10px 12px;
-  font-size: 12px;
-  line-height: 1.5;
-}
-.tp-privacy-banner.teams-active { display: block; }
-.tp-inline-notice {
-  display: none;
-  color: var(--tp-muted);
-  font-size: 12px;
-}
-.tp-inline-notice.tp-visible { display: block; }
-.tp-viewport {
-  flex: 1;
-  min-height: 220px;
-  overflow-y: auto;
-  background: var(--tp-bg);
-  color: var(--tp-text);
-  border-radius: 12px;
-  border: 1px solid rgba(148,163,184,0.18);
-  padding: 20px 24px;
-}
-.tp-content {
-  font-size: var(--tp-font-size, 30px);
-  line-height: 1.7;
-}
-.tp-content img {
-  max-width: 100%;
-  height: auto;
-}
-.tp-content h1,
-.tp-content h2,
-.tp-content h3,
-.tp-content h4,
-.tp-content h5,
-.tp-content h6 {
-  color: var(--tp-text);
-}
-.tp-content p,
-.tp-content li,
-.tp-content blockquote { color: inherit; }
-.tp-chapter-meta {
-  margin-bottom: 18px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid rgba(148,163,184,0.22);
-}
-.tp-chapter-eyebrow {
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--tp-accent);
-  margin-bottom: 6px;
-}
-.tp-chapter-heading {
-  margin: 0;
-  font-size: 1.1em;
-  line-height: 1.25;
-}
-.tp-chapter-date {
-  margin-top: 5px;
-  font-size: 0.62em;
-  color: var(--tp-muted);
-}
-.tp-empty {
-  margin: 0;
-  color: var(--tp-muted);
-}
-`;
+const TELEPROMPTER_STYLE_TEXT = [
+  '.tp-shell {',
+  '  --tp-bg: #0f172a;',
+  '  --tp-panel: #111827;',
+  '  --tp-text: #f8fafc;',
+  '  --tp-muted: #cbd5e1;',
+  '  --tp-accent: #60a5fa;',
+  '  color: var(--tp-text);',
+  '  background: var(--tp-panel);',
+  '  border: 1px solid rgba(148,163,184,0.22);',
+  '  border-radius: 14px;',
+  '  box-shadow: 0 10px 28px rgba(15,23,42,0.16);',
+  '  padding: 14px;',
+  '  display: flex;',
+  '  flex-direction: column;',
+  '  gap: 12px;',
+  '  min-height: 260px;',
+  '}',
+  '.tp-popup-shell {',
+  '  min-height: calc(100vh - 28px);',
+  '  margin: 14px;',
+  '  box-sizing: border-box;',
+  '}',
+  '.tp-theme-light {',
+  '  --tp-bg: #ffffff;',
+  '  --tp-panel: #f8fafc;',
+  '  --tp-text: #111827;',
+  '  --tp-muted: #475569;',
+  '  --tp-accent: #2563eb;',
+  '}',
+  '.tp-theme-sepia {',
+  '  --tp-bg: #f6efe2;',
+  '  --tp-panel: #efe3c6;',
+  '  --tp-text: #4b3521;',
+  '  --tp-muted: #7c5f3b;',
+  '  --tp-accent: #b45309;',
+  '}',
+  '.tp-theme-highcontrast {',
+  '  --tp-bg: #000000;',
+  '  --tp-panel: #000000;',
+  '  --tp-text: #ffff00;',
+  '  --tp-muted: #ffffff;',
+  '  --tp-accent: #00ffff;',
+  '}',
+  '.tp-header {',
+  '  display: flex;',
+  '  justify-content: space-between;',
+  '  align-items: flex-start;',
+  '  gap: 10px;',
+  '}',
+  '.tp-title-block { min-width: 0; }',
+  '.tp-title {',
+  '  margin: 0;',
+  '  font-size: 18px;',
+  '  color: var(--tp-text);',
+  '}',
+  '.tp-subtitle {',
+  '  margin-top: 3px;',
+  '  color: var(--tp-muted);',
+  '  font-size: 12px;',
+  '}',
+  '.tp-controls {',
+  '  display: flex;',
+  '  flex-wrap: wrap;',
+  '  gap: 10px;',
+  '  align-items: flex-end;',
+  '}',
+  '.tp-control {',
+  '  display: flex;',
+  '  flex-direction: column;',
+  '  gap: 4px;',
+  '  min-width: 120px;',
+  '  color: var(--tp-muted);',
+  '  font-size: 12px;',
+  '}',
+  '.tp-control select,',
+  '.tp-control input[type="range"] {',
+  '  width: 100%;',
+  '}',
+  '.tp-inline-values {',
+  '  display: inline-flex;',
+  '  align-items: center;',
+  '  gap: 6px;',
+  '}',
+  '.tp-btn-row {',
+  '  display: flex;',
+  '  flex-wrap: wrap;',
+  '  gap: 8px;',
+  '  margin-left: auto;',
+  '}',
+  '.tp-btn {',
+  '  border: 1px solid rgba(148,163,184,0.35);',
+  '  background: rgba(255,255,255,0.08);',
+  '  color: var(--tp-text);',
+  '  border-radius: 8px;',
+  '  padding: 7px 11px;',
+  '  font-size: 12px;',
+  '  cursor: pointer;',
+  '}',
+  '.tp-btn:hover { border-color: var(--tp-accent); }',
+  '.tp-btn-primary {',
+  '  background: var(--tp-accent);',
+  '  color: #fff;',
+  '  border-color: var(--tp-accent);',
+  '}',
+  '.tp-btn-danger {',
+  '  background: #dc2626;',
+  '  border-color: #dc2626;',
+  '  color: #fff;',
+  '}',
+  '.tp-privacy-banner {',
+  '  display: none;',
+  '  background: rgba(37,99,235,0.18);',
+  '  color: var(--tp-text);',
+  '  border: 1px solid rgba(96,165,250,0.42);',
+  '  border-radius: 10px;',
+  '  padding: 10px 12px;',
+  '  font-size: 12px;',
+  '  line-height: 1.5;',
+  '}',
+  '.tp-privacy-banner.teams-active { display: block; }',
+  '.tp-inline-notice {',
+  '  display: none;',
+  '  color: var(--tp-muted);',
+  '  font-size: 12px;',
+  '}',
+  '.tp-inline-notice.tp-visible { display: block; }',
+  '.tp-viewport {',
+  '  flex: 1;',
+  '  min-height: 220px;',
+  '  overflow-y: auto;',
+  '  background: var(--tp-bg);',
+  '  color: var(--tp-text);',
+  '  border-radius: 12px;',
+  '  border: 1px solid rgba(148,163,184,0.18);',
+  '  padding: 20px 24px;',
+  '}',
+  '.tp-content {',
+  '  font-size: var(--tp-font-size, 30px);',
+  '  line-height: 1.7;',
+  '}',
+  '.tp-content img {',
+  '  max-width: 100%;',
+  '  height: auto;',
+  '}',
+  '.tp-content h1,',
+  '.tp-content h2,',
+  '.tp-content h3,',
+  '.tp-content h4,',
+  '.tp-content h5,',
+  '.tp-content h6 {',
+  '  color: var(--tp-text);',
+  '}',
+  '.tp-content p,',
+  '.tp-content li,',
+  '.tp-content blockquote { color: inherit; }',
+  '.tp-chapter-meta {',
+  '  margin-bottom: 18px;',
+  '  padding-bottom: 14px;',
+  '  border-bottom: 1px solid rgba(148,163,184,0.22);',
+  '}',
+  '.tp-chapter-eyebrow {',
+  '  font-size: 12px;',
+  '  letter-spacing: 0.08em;',
+  '  text-transform: uppercase;',
+  '  color: var(--tp-accent);',
+  '  margin-bottom: 6px;',
+  '}',
+  '.tp-chapter-heading {',
+  '  margin: 0;',
+  '  font-size: 1.1em;',
+  '  line-height: 1.25;',
+  '}',
+  '.tp-chapter-date {',
+  '  margin-top: 5px;',
+  '  font-size: 0.62em;',
+  '  color: var(--tp-muted);',
+  '}',
+  '.tp-empty {',
+  '  margin: 0;',
+  '  color: var(--tp-muted);',
+  '}',
+].join('\n');
 
 /* ---- Help overlay ---- */
 function openHelpOverlay()  { const el = document.getElementById('helpOverlay'); if (el) el.classList.add('help-visible'); }
@@ -8357,7 +8357,7 @@ function renderLsChapterTree() {
   ensureTimeline();
   const events = (model.timeline || []).slice().sort(compareTlDates);
   if (events.length === 0) {
-    list.innerHTML = '<div style="color:#9ca3af;font-size:12px;padding:8px 4px">No chapters yet. Click \u201cAdd New Chapter\u201d to start.</div>';
+    list.innerHTML = '<div style="color:#9ca3af;font-size:12px;padding:8px 4px">No chapters yet. Click &ldquo;Add New Chapter&rdquo; to start.</div>';
     syncTeleprompter();
     return;
   }
@@ -8404,7 +8404,7 @@ function renderLsChapterTree() {
       if (activeChapterId === ev.id) {
         activeChapterId = null;
         const ed = document.getElementById('lsEditor');
-        if (ed) ed.innerHTML = '<p style="color:#9ca3af">Select a chapter or click \u201cAdd New Chapter\u201d\u2026</p>';
+        if (ed) ed.innerHTML = '<p style="color:#9ca3af">Select a chapter or click &ldquo;Add New Chapter&rdquo;&hellip;</p>';
         const di = document.getElementById('lsNewDate');  if (di) di.value = '';
         const ti = document.getElementById('lsNewTitle'); if (ti) ti.value = '';
       }
@@ -8722,7 +8722,7 @@ function getTeleprompterSelectedChapterId() {
 function getTeleprompterChapterLabel(ev, idx) {
   const live = getLiveChapterSnapshot(ev) || ev || {};
   const bits = [live.date, getTeleprompterDisplayTitle(live, idx), live.isDraft ? 'Draft' : ''].filter(Boolean);
-  return bits.join(' — ');
+  return bits.join(' - ');
 }
 
 function getTeleprompterDisplayTitle(ev, idx) {
@@ -8743,7 +8743,7 @@ function getTeleprompterChapterHtml(ev) {
   if (!bodyHtml) bodyHtml = '<p class="tp-empty">No vignette text yet for this chapter.</p>';
   return ''
     + '<div class="tp-chapter-meta">'
-    +   '<div class="tp-chapter-eyebrow">' + escapeHtml(activeChapterId === live.id ? 'Active chapter' : 'Selected chapter') + (live.isDraft ? ' · Draft' : '') + '</div>'
+    +   '<div class="tp-chapter-eyebrow">' + escapeHtml(activeChapterId === live.id ? 'Active chapter' : 'Selected chapter') + (live.isDraft ? ' - Draft' : '') + '</div>'
     +   '<h1 class="tp-chapter-heading">' + escapeHtml(title) + '</h1>'
     +   (date ? '<div class="tp-chapter-date">' + escapeHtml(date) + '</div>' : '')
     + '</div>'
@@ -8811,7 +8811,7 @@ function getTeleprompterMarkup(isPopup) {
     +       '<button type="button" class="tp-btn tp-btn-danger" data-tp-action="leaveTeams">Leave Teams</button>'
     +     '</div>'
     +   '</div>'
-    +   '<div class="tp-privacy-banner" data-tp-ref="privacyBanner">🔒 Teams session active — the diagram view remains locked for privacy until you leave the session.</div>'
+    +   '<div class="tp-privacy-banner" data-tp-ref="privacyBanner">&#128274; Teams session active - the diagram view remains locked for privacy until you leave the session.</div>'
     +   '<div class="tp-inline-notice" data-tp-ref="notice"></div>'
     +   '<div class="tp-viewport" data-tp-ref="viewport"><div class="tp-content" data-tp-ref="content"></div></div>'
     + '</section>';
@@ -9085,7 +9085,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var lsLeaveTeams = document.getElementById('lsLeaveTeamsBtn');
   if (lsLeaveTeams) lsLeaveTeams.addEventListener('click', leaveTeamsSession);
 
-  /* Teams join modal — step 1 */
+  /* Teams join modal - step 1 */
   var teamsJoinCancel = document.getElementById('teamsJoinCancelBtn');
   if (teamsJoinCancel) teamsJoinCancel.addEventListener('click', closeTeamsModals);
 
@@ -9121,7 +9121,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (m2) m2.style.display = 'flex';
   });
 
-  /* Teams confirm modal — step 2 */
+  /* Teams confirm modal - step 2 */
   var teamsConfirmBack = document.getElementById('teamsConfirmBackBtn');
   if (teamsConfirmBack) teamsConfirmBack.addEventListener('click', function() {
     var m2 = document.getElementById('teamsConfirmModal');
@@ -9130,7 +9130,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (m1) m1.style.display = 'flex';
   });
 
-  /* Privacy agreement checkbox — show/hide join button */
+  /* Privacy agreement checkbox - show/hide join button */
   var teamsPrivacyCb = document.getElementById('teamsPrivacyCheckbox');
   if (teamsPrivacyCb) teamsPrivacyCb.addEventListener('change', function() {
     var joinBtn = document.getElementById('teamsConfirmJoinBtn');
